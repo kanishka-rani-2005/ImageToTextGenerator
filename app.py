@@ -90,9 +90,13 @@ def main():
 
         
         scenario:str=generate_text_from_img(uploaded_file.name)
-        story:str=generate_story_from_text(scenario)
+        generated_story: str = generate_story_from_text(scenario)
+
+        with st.expander('Generated title'):
+            st.write(scenario)
+            st.write('---')
         with st.expander('Generated Short Story'):
-            st.write(story)
+            st.write(generated_story)
 
 
     else:
