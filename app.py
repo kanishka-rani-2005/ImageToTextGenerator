@@ -30,16 +30,44 @@ def progress_bar(amt_of_time)->Any:
     my_bar.empty()
 
 
-def generate_text_from_img(file_path):
-    pass
+def generate_text_from_img(file_path:str)->str:
+    image_to_text:Any=pipeline('image-to-text',model="Salesforce/blip-image-captioning-base",device=-1 ) #-1 for cpu
+    text:str=image_to_text(file_path)[0]['generated_text']
+
+    print(f'Image url{file_path}')
+    print(f'Generated text {text}')
+    return text
 
 def generate_story_from_text(text):
-    pass
+    prompt_template:str=f'''
+
+    Your are a talented story writer . WHo can create a story from a simple narrative ./
+    You have to create a story from the following text but the story must be minimum of 50 words it must be interesting while reading :
+    CONTEXT:{text}
+    STORY:
+    '''
+
+    prompt=PromptTemplate(template=prompt_template,input_variables=['text'])
+    llm=ChatGroq(api_key=GROQ_API_KEY,model='llama-3.3-70b-versatile')
+    story_llm: Any = LLMChain(llm=llm, prompt=prompt, verbose=True)
+    generated_story: str = story_llm.predict(text=text)
+
+    print(f"TEXT INPUT: {text}")
+    print(f"GENERATED STORY OUTPUT: {generated_story}")
+    return generated_story
 
 
+def generate_speech_from_text(text:str)->Any:
+    API_URL: str = "https://api-inference.huggingface.co/models/espnet/kan-bayashi_ljspeech_vits"
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}"}
+    response = requests.post(API_URL, headers=headers, json={"inputs": text})
+    speech: str = response.json()["outputs"]["generated_text"]
+    
+    with open ('Generated_Audio.flac','wb') as file:
+        file.write(speech)
 
-def generate_speech_from_text(text):
-    pass
+    print(f"TEXT INPUT: {text}")
+    print(f"GENERATED SPEECH OUTPUT: {speech}")
 
 
 
@@ -61,7 +89,7 @@ def main():
     uploaded_file=st.file_uploader('Choose a file to upload',type='png')
     if uploaded_file is not None:
         st.image(uploaded_file, caption="Uploaded Image",
-                 use_column_width=True)
+                 use_container_width=True)
         bytes_data:Any=uploaded_file.getvalue()
         with open (uploaded_file.name,'wb') as file:
             file.write(bytes_data)
@@ -77,7 +105,7 @@ def main():
         with st.expander('Generated Short Story'):
             st.write(story)
 
-        st.audio('Generated_Audio.flac')
+        # st.audio('Generated_Audio.flac')
 
     else:
         st.warning("Please upload an image to get started .")
