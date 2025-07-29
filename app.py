@@ -31,7 +31,12 @@ def progress_bar(amt_of_time)->Any:
 
 
 def generate_text_from_img(file_path:str)->str:
-    image_to_text:Any=pipeline('image-to-text',model="Salesforce/blip-image-captioning-base",device=-1 ) #-1 for cpu
+    image_to_text = pipeline(
+        "image-to-text",
+        model="Salesforce/blip-image-captioning-base",
+        device=0
+    )
+
     text:str=image_to_text(file_path)[0]['generated_text']
 
     print(f'Image url{file_path}')
@@ -55,19 +60,6 @@ def generate_story_from_text(text):
     print(f"TEXT INPUT: {text}")
     print(f"GENERATED STORY OUTPUT: {generated_story}")
     return generated_story
-
-
-def generate_speech_from_text(text:str)->Any:
-    API_URL: str = "https://api-inference.huggingface.co/models/espnet/kan-bayashi_ljspeech_vits"
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_TOKEN}"}
-    response = requests.post(API_URL, headers=headers, json={"inputs": text})
-    speech: str = response.json()["outputs"]["generated_text"]
-    
-    with open ('Generated_Audio.flac','wb') as file:
-        file.write(speech)
-
-    print(f"TEXT INPUT: {text}")
-    print(f"GENERATED SPEECH OUTPUT: {speech}")
 
 
 
@@ -95,17 +87,13 @@ def main():
             file.write(bytes_data)
             file.close()
         progress_bar(100)
+
         
         scenario:str=generate_text_from_img(uploaded_file.name)
         story:str=generate_story_from_text(scenario)
-        generate_speech_from_text(story)
-
-        with st.expander('Generated Image Scenario'):
-            st.write(scenario)
         with st.expander('Generated Short Story'):
             st.write(story)
 
-        # st.audio('Generated_Audio.flac')
 
     else:
         st.warning("Please upload an image to get started .")
