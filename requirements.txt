@@ -7,3 +7,4 @@ typing
 langchain_community
 langchain_groq
 langchain_core
+torch
