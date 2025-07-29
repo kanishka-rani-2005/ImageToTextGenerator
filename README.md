@@ -1,10 +1,16 @@
 ## Image to Text Generator 
 
-#### You just need to upload an image 
-#### The model will generate the text from the image
-#### Then Model will automatically generate a story according to that text 
-#### You can use this model for your own projects, just make sure to give credit to the original
+##### You just need to upload an image 
+##### The model will generate the text from the image
+##### Then Model will automatically generate a story according to that text 
+##### You can use this model for your own projects, just make sure to give credit to the original
 
+
+## Clone the Repository
+```bash
+git init
+git clone https://github.com/kanishka-rani-2005/ImageToTextGenerator.git
+```
 
 ## Create Virtual environment
 ```bash
