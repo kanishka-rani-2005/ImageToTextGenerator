@@ -30,16 +30,57 @@ def progress_bar(amt_of_time)->Any:
     my_bar.empty()
 
 
+def generate_text_from_img(file_path):
+    pass
+
+def generate_story_from_text(text):
+    pass
+
+
+
+def generate_speech_from_text(text):
+    pass
+
 
 
 def main():
 
     st.set_page_config(page_title= "IMAGE TO STORY CONVERTER", page_icon= "🖼️")
 
-    st.title('Image to Speech Generator')
+    st.header('Image to Speech Generator')
     st.write('This app uses a combination of AI models to generate a short story from an image .')
-    
+    st.write('Please upload an image to get started .')
 
+    
+    with st.sidebar:
+        st.image("aud-img/person.png")
+        st.write("---")
+        st.write("AI App created by @ Kanishka Rani")
+
+
+    uploaded_file=st.file_uploader('Choose a file to upload',type='png')
+    if uploaded_file is not None:
+        st.image(uploaded_file, caption="Uploaded Image",
+                 use_column_width=True)
+        bytes_data:Any=uploaded_file.getvalue()
+        with open (uploaded_file.name,'wb') as file:
+            file.write(bytes_data)
+            file.close()
+        progress_bar(100)
+        
+        scenario:str=generate_text_from_img(uploaded_file.name)
+        story:str=generate_story_from_text(scenario)
+        generate_speech_from_text(story)
+
+        with st.expander('Generated Image Scenario'):
+            st.write(scenario)
+        with st.expander('Generated Short Story'):
+            st.write(story)
+
+        st.audio('Generated_Audio.flac')
+
+    else:
+        st.warning("Please upload an image to get started .")
 
 if __name__ == "__main__":
     main()
